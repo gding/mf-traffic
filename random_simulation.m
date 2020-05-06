@@ -12,24 +12,26 @@ travel_cost = zeros(1,numel(ts));
 xs = zeros(4,numel(ts));
 xs(:,1) = x;
 for i = 2:numel(ts)
-    u0 = rand;          % stay on edge 0
-    u1 = rand*(1-u0);  % transition to edge 1, 1-u0-u1 = transition to u2
-    x = [u0      0         0         0;
-         u1      1-g(x(2)) 0         0;
-         1-u0-u1 0         1-g(x(3)) 0;
-         0       g(x(2))   g(x(3))   1]*x;
+    u0 = rand; % leave edge 0
+    u1 = rand; % transition to edge 1
+    x = [1-u0       0            0            0;
+         u0*u1      1-g(x(2))*dt 0            0;
+         u0*(1-u1) 1-u0-u1 0            1-g(x(3))*dt 0;
+         0         g(x(2))*dt   g(x(3))*dt   1]*x;
     xs(:,i) = x;
     arrival_cost(i) = arrival_cost(i-1) + (1-x(4));
     travel_cost(i) = travel_cost(i-1) + (1-x(1)-x(4));
 end
 if plots
-    figure; hold on;
+    figure(1); hold on;
     plot(xs(1,:),'color','r');
     plot(xs(2,:),'color','g');
     plot(xs(3,:),'color','b');
     plot(xs(4,:),'color','k');
-    figure; hold on;
+    legend('start','path1','path2','end');
+    figure(2); hold on;
     plot(travel_cost,'color','b');
     plot(arrival_cost,'color','r');
+    legend('travel cost','arrival cost');
 end
 end

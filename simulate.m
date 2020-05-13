@@ -7,12 +7,12 @@ function [t,x,running_cost,terminal_cost] = simulate(varargin)
 % Notation is as follows: edge 1 is the departure edge, edge n is the
 % destination edge, and thus there are n-2 parallel paths between them.
 % 
-% varargin{1} = controller. f: x [[0,1]^n] --> u [[0,1]^(n-1)]
+% varargin{1} = controller. f: x [[0,1]^n] --> u [[0,1]^n]
 %   u(i) represents the proportion of flow from edge 1 to edge i, and must
-%   sum to 1, By default, a uniformly random number remain on the start edge
-%   and the remainder are uniformly randomly distributed across the
-%   transition edges. If the density on edge 1 is less than 1e-6, all flow
-%   will leave the edge.
+%   sum to 1, By default, a uniformly random proportion between 0.9 and 1
+%   remain on the start edge and the remainder are uniformly randomly
+%   distributed across the transition edges. If the density on edge 1 is
+%   less than 1e-6, all flow will leave the edge.
 %
 % varargin{2} = running cost. f: x [[0,1]^n] --> L [R]
 %   L represents the running cost of some state x. By default, the sum of
@@ -75,7 +75,8 @@ end
 if nargin < 6
     Dcr = 0.2; % critical density - max flow below, linearly decreases above
     Qmax = 0.1; % max flow rate
-    g = @(x) (x <= 1e-6) + (x > 1e-6).*Qmax.*((x <= Dcr) + (x > Dcr).*(1-x)/(1-Dcr));
+    g = @(x) Qmax.*((x <= Dcr) + (x > Dcr).*(1-x)/(1-Dcr));
+%     g = @(x) (x <= 1e-6) + (x > 1e-6).*Qmax.*((x <= Dcr) + (x > Dcr).*(1-x)/(1-Dcr));
 else
     g = varargin{6};
 end
@@ -111,7 +112,7 @@ end
 function u = default_ufunc(x)
 n = numel(x);
 u = zeros(n,1);
-u(1) = (x(1) > 1e-6)*rand;
+u(1) = 1 - (x(1) > 1e-6)*rand*0.1;
 tmp = rand(n-2,1);
 u(2:end-1) = tmp/sum(tmp)*(1-u(1));
 end

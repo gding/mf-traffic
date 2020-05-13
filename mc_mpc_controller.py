@@ -12,7 +12,7 @@ def mc_mpc_controller(g,x,horizon=30/0.1,time_step=0.1, num_runs=100):
 
     def random_controller(g,x):
     	"""
-		Pick a random control input. Not generalized (for now?)
+	Pick a random control input. Not generalized (for now?)
     	"""
     	matrix = g.get_adj_matrix()
     	u1 = np.random.random()
@@ -38,4 +38,4 @@ def mc_mpc_controller(g,x,horizon=30/0.1,time_step=0.1, num_runs=100):
             # TODO. If input is returned as discussed in line 30 above, good_u = u[0,:,:] or something like that 
             min_cost = run_cost
 
-	return good_u
+    return good_u
